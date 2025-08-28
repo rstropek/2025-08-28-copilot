@@ -16,6 +16,7 @@ type JointAngles = {
 interface ThreeSceneProps {
   className?: string;
   jointAngles?: JointAngles;
+  farbe?: string;
 }
 
 // Robot arm dimensions in meters (1 cm = 0.01 m)
@@ -42,7 +43,19 @@ const HOME_POSE = {
   // j4 is calculated automatically to keep pipette vertical
 };
 
-export default function ThreeScene({ className = '', jointAngles }: ThreeSceneProps) {
+// Color mapping function
+const getFarbeHex = (farbeName: string): number => {
+  const farbMap: { [key: string]: number } = {
+    'red': 0xff0000,
+    'blue': 0x0000ff,
+    'green': 0x00ff00,
+    'black': 0x000000,
+    'white': 0xffffff
+  };
+  return farbMap[farbeName.toLowerCase()] || 0x808080; // Default to gray
+};
+
+export default function ThreeScene({ className = '', jointAngles, farbe = 'white' }: ThreeSceneProps) {
   const mountRef = useRef<HTMLDivElement>(null);
   const [isClient, setIsClient] = useState(false);
   const armGroupRef = useRef<THREE.Group | null>(null);
@@ -141,12 +154,13 @@ export default function ThreeScene({ className = '', jointAngles }: ThreeScenePr
       const armGroup = new THREE.Group();
       
       // Materials
-            const baseMaterial = new THREE.MeshStandardMaterial({ color: 0x808080 }); // Gray
-            const segment1Material = new THREE.MeshStandardMaterial({ color: 0x909090 }); // Light gray
-            const segment2Material = new THREE.MeshStandardMaterial({ color: 0x707070 }); // Medium gray
-            const segment3Material = new THREE.MeshStandardMaterial({ color: 0x606060 }); // Dark gray
-            const pipetteMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff }); // White
-            const jointMaterial = new THREE.MeshStandardMaterial({ color: 0x404040 }); // Dark gray
+      const ausgewaehlterFarbeHex = getFarbeHex(farbe);
+      const baseMaterial = new THREE.MeshStandardMaterial({ color: ausgewaehlterFarbeHex });
+      const segment1Material = new THREE.MeshStandardMaterial({ color: ausgewaehlterFarbeHex });
+      const segment2Material = new THREE.MeshStandardMaterial({ color: ausgewaehlterFarbeHex });
+      const segment3Material = new THREE.MeshStandardMaterial({ color: ausgewaehlterFarbeHex });
+      const pipetteMaterial = new THREE.MeshStandardMaterial({ color: ausgewaehlterFarbeHex });
+      const jointMaterial = new THREE.MeshStandardMaterial({ color: ausgewaehlterFarbeHex });
       
       // Base (cylinder) - bottom rests on ground
       const baseGeometry = new THREE.CylinderGeometry(
@@ -331,7 +345,7 @@ export default function ThreeScene({ className = '', jointAngles }: ThreeScenePr
       controls.dispose();
       renderer.dispose();
     };
-  }, [isClient]);
+  }, [isClient, farbe]);
 
   if (!isClient) {
     return (

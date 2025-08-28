@@ -240,3 +240,29 @@
   width: 24px;
   height: 24px;
 }
+
+/* Color Select Styles */
+.colorSelect {
+  padding: 0.5rem;
+  border: 2px solid var(--slider-track-color);
+  border-radius: 4px;
+  background: var(--slider-thumb-color);
+  color: var(--label-color);
+  font-size: 0.875rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  outline: none;
+  min-width: 120px;
+}
+
+.colorSelect:focus {
+  border-color: var(--slider-active-color);
+  box-shadow: 0 0 0 2px rgba(0, 122, 204, 0.2);
+}
+
+.colorSelect:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: var(--slider-disabled-color);
+}
