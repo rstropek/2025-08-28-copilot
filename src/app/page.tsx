@@ -3,6 +3,7 @@
 import { useState } from "react";
 import ThreeScene from "@/components/arm";
 import { ArmControl } from "@/components/slider";
+import ThemeSwitcher from "@/components/theme-switcher";
 
 type JointAngles = {
   j0: number;  // yaw
@@ -22,6 +23,7 @@ export default function Home() {
 
   return (
     <>
+      <ThemeSwitcher />
       <ArmControl onJointChange={setJointAngles} />
       <ThreeScene className="scene" jointAngles={jointAngles} />
     </>

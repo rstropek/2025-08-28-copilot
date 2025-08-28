@@ -171,6 +171,20 @@
   }
 }
 
+/* Manual dark theme support via data-theme attribute */
+[data-theme="dark"] .sliderContainer {
+  --slider-track-color: #404040;
+  --slider-active-color: #4fc3f7;
+  --slider-thumb-color: #ffffff;
+  --slider-thumb-border: #4fc3f7;
+  --slider-thumb-shadow: rgba(0, 0, 0, 0.4);
+  --slider-focus-color: #29b6f6;
+  --slider-disabled-color: #666666;
+  --label-color: #e0e0e0;
+  --value-color: #b0b0b0;
+  --tick-color: #888888;
+}
+
 /* High contrast mode support */
 @media (prefers-contrast: high) {
   .sliderContainer {

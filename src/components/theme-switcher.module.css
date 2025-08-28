@@ -1,0 +1,32 @@
+.themeSwitcher {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  width: 3rem;
+  height: 3rem;
+  border: none;
+  border-radius: 50%;
+  background: var(--theme-switcher-bg);
+  color: var(--theme-switcher-color);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--theme-switcher-shadow);
+  transition: all 0.2s ease;
+  z-index: 1000;
+}
+
+.themeSwitcher:hover {
+  transform: scale(1.05);
+  box-shadow: var(--theme-switcher-hover-shadow);
+}
+
+.themeSwitcher:active {
+  transform: scale(0.95);
+}
+
+.themeSwitcher:focus {
+  outline: 2px solid var(--theme-switcher-focus);
+  outline-offset: 2px;
+}
