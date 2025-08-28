@@ -78,7 +78,7 @@ type JointAngles = {
   j1: number;  // pitch
   j2: number;  // pitch
   j3: number;  // pitch
-  j4: number;  // pitch
+  // j4 is calculated automatically to keep pipette vertical
 };
 
 type ArmControlProps = {
@@ -96,8 +96,7 @@ export function ArmControl({
     j0: 0,
     j1: -60,
     j2: 20,
-    j3: 30,
-    j4: 90
+    j3: 30
   });
 
   const handleJointChange = useCallback((joint: keyof JointAngles, value: number) => {
@@ -144,15 +143,7 @@ export function ArmControl({
         onChange={(value) => handleJointChange('j3', value)}
         disabled={disabled}
       />
-      <Slider
-        label="J4 (pitch)"
-        min={-90}
-        max={90}
-        step={1}
-        value={joints.j4}
-        onChange={(value) => handleJointChange('j4', value)}
-        disabled={disabled}
-      />
+
     </div>
   );
 }

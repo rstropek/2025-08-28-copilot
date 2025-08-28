@@ -3,13 +3,14 @@
 import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { calculateVerticalPipetteTilt } from '@/lib/pipette-vertical';
 
 type JointAngles = {
   j0: number;  // yaw
   j1: number;  // pitch
   j2: number;  // pitch
   j3: number;  // pitch
-  j4: number;  // pitch
+  // j4 is calculated automatically to keep pipette vertical
 };
 
 interface ThreeSceneProps {
@@ -38,7 +39,7 @@ const HOME_POSE = {
   j1: -60,  // shoulder pitch (negative to lift up)
   j2: 20,  // elbow pitch (negative to fold upward)
   j3: 30,  // wrist pitch (negative to point forward)
-  j4: 90     // pipette tilt (straight)
+  // j4 is calculated automatically to keep pipette vertical
 };
 
 export default function ThreeScene({ className = '', jointAngles }: ThreeSceneProps) {
@@ -67,7 +68,11 @@ export default function ThreeScene({ className = '', jointAngles }: ThreeScenePr
   useEffect(() => {
     if (!jointAngles || !isClient) return;
 
-    const { j0, j1, j2, j3, j4 } = jointAngles;
+    const { j0, j1, j2, j3 } = jointAngles;
+    
+    // Calculate J4 automatically to keep pipette vertical
+    const j4 = calculateVerticalPipetteTilt(j1, j2, j3);
+    
     const degToRad = (degrees: number) => degrees * Math.PI / 180;
 
     if (jointGroupsRef.current.j0) {
@@ -249,7 +254,8 @@ export default function ThreeScene({ className = '', jointAngles }: ThreeScenePr
       // J4 (pipette tilt) - rotation around X axis
       const j4Group = new THREE.Group();
       j4Group.position.z = DIMENSIONS.segment3.length;
-      j4Group.rotation.x = degToRad(HOME_POSE.j4);
+      // Initialize with calculated vertical tilt based on home pose
+      j4Group.rotation.x = degToRad(calculateVerticalPipetteTilt(HOME_POSE.j1, HOME_POSE.j2, HOME_POSE.j3));
       j3Group.add(j4Group);
       jointGroupsRef.current.j4 = j4Group;
       
