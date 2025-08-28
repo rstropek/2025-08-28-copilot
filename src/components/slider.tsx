@@ -83,12 +83,14 @@ type JointAngles = {
 
 type ArmControlProps = {
   onJointChange?: (joints: JointAngles) => void;
+  onFarbeChange?: (farbe: string) => void;
   className?: string;
   disabled?: boolean;
 };
 
 export function ArmControl({
   onJointChange,
+  onFarbeChange,
   className = '',
   disabled = false
 }: ArmControlProps) {
@@ -99,14 +101,39 @@ export function ArmControl({
     j3: 30
   });
 
+  const [farbe, setFarbe] = useState<string>('white');
+
   const handleJointChange = useCallback((joint: keyof JointAngles, value: number) => {
     const newJoints = { ...joints, [joint]: value };
     setJoints(newJoints);
     onJointChange?.(newJoints);
   }, [joints, onJointChange]);
 
+  const handleFarbeChange = useCallback((event: React.ChangeEvent<HTMLSelectElement>) => {
+    const neueFarbe = event.target.value;
+    setFarbe(neueFarbe);
+    onFarbeChange?.(neueFarbe);
+  }, [onFarbeChange]);
+
   return (
     <div className={`${className}`}>
+      <div className={styles.sliderContainer}>
+        <label className={styles.label} htmlFor="roboter-farbe">Robot Color:</label>
+        <select 
+          id="roboter-farbe"
+          value={farbe}
+          onChange={handleFarbeChange}
+          disabled={disabled}
+          className={styles.colorSelect}
+        >
+          <option value="red">Red</option>
+          <option value="blue">Blue</option>
+          <option value="green">Green</option>
+          <option value="black">Black</option>
+          <option value="white">White</option>
+        </select>
+      </div>
+      
       <Slider
         label="J0 (yaw)"
         min={0}

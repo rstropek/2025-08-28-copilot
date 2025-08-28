@@ -20,10 +20,19 @@ export default function Home() {
     j3: 30
   });
 
+  const [roboterFarbe, setRoboterFarbe] = useState<string>('white');
+
   return (
     <>
-      <ArmControl onJointChange={setJointAngles} />
-      <ThreeScene className="scene" jointAngles={jointAngles} />
+      <ArmControl 
+        onJointChange={setJointAngles} 
+        onFarbeChange={setRoboterFarbe} 
+      />
+      <ThreeScene 
+        className="scene" 
+        jointAngles={jointAngles} 
+        farbe={roboterFarbe} 
+      />
     </>
   );
 }
