@@ -8,7 +8,6 @@ import ThreeScene from "@/components/arm";
 export default function Home() {
   return (
     <>
-      <h1>Hello World!</h1>
       <ThreeScene className="scene" />
     </>
   );
