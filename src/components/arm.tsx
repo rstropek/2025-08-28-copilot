@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 interface ThreeSceneProps {
   className?: string;
@@ -69,6 +70,19 @@ export default function ThreeScene({ className = '' }: ThreeSceneProps) {
 
     // Add renderer to DOM
     container.appendChild(renderer.domElement);
+
+    // Setup orbit controls
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.target.set(0, 0.5, 0); // Look at the center of the robot arm
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.enableZoom = true;
+    controls.enablePan = true;
+    controls.enableRotate = true;
+    controls.minDistance = 1;
+    controls.maxDistance = 10;
+    controls.minPolarAngle = Math.PI / 6; // 30 degrees from top
+    controls.maxPolarAngle = Math.PI - Math.PI / 6; // 30 degrees from bottom
 
     // Function to create robot arm
     const createRobotArm = (scene: THREE.Scene) => {
@@ -233,21 +247,29 @@ export default function ThreeScene({ className = '' }: ThreeSceneProps) {
     const axesHelper = new THREE.AxesHelper(0.2);
     scene.add(axesHelper);
 
-    // Render function
-    const render = () => {
+    // Animation loop
+    let animationId: number;
+    const animate = () => {
+      controls.update(); // Update controls for damping
       renderer.render(scene, camera);
+      animationId = requestAnimationFrame(animate);
     };
 
-    // Initial render
-    render();
+    // Start animation loop
+    animate();
 
     // Cleanup function
     return () => {
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+      }
+      
       if (container && renderer.domElement) {
         container.removeChild(renderer.domElement);
       }
       
       // Dispose of Three.js resources
+      controls.dispose();
       renderer.dispose();
     };
   }, [isClient]);
