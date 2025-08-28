@@ -12,10 +12,10 @@ Add a css file for the module so that I can control the visual representation.
 Now create a second component in #file:slider.tsx . It should contain 5 sliders:
 
 * J0 (yaw): 0-360, default 0
-* J1 (pitch): 0-90, default 75
-* J2 (pitch): 0-90, default 45
-* J3 (pitch): 0-90, default 15
-* J4 (pitch): 0-90, default 10
+* J1 (pitch): -90 to +90, default -60
+* J2 (pitch): -90 to +90, default 20
+* J3 (pitch): -90 to +90, default 30
+* J4 (pitch): -90 to +90, default 90
 
 It must make the current values of the sliders accessible for the user of the component
 

@@ -4,8 +4,17 @@ import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
+type JointAngles = {
+  j0: number;  // yaw
+  j1: number;  // pitch
+  j2: number;  // pitch
+  j3: number;  // pitch
+  j4: number;  // pitch
+};
+
 interface ThreeSceneProps {
   className?: string;
+  jointAngles?: JointAngles;
 }
 
 // Robot arm dimensions in meters (1 cm = 0.01 m)
@@ -16,7 +25,7 @@ const DIMENSIONS = {
   segment3: { width: 0.06, height: 0.06, length: 0.25 }, // 6×6×25cm
   segment4: { radius: 0.01, height: 0.10 }, // Ø=2cm, H=10cm (pipette)
   joints: {
-    shoulder: 0.06, // 6cm radius
+    shoulder: 0.10, // 10cm radius
     elbow: 0.05,    // 5cm radius
     wrist: 0.04,    // 4cm radius
     pipette: 0.015  // 1.5cm radius
@@ -32,13 +41,51 @@ const HOME_POSE = {
   j4: 90     // pipette tilt (straight)
 };
 
-export default function ThreeScene({ className = '' }: ThreeSceneProps) {
+export default function ThreeScene({ className = '', jointAngles }: ThreeSceneProps) {
   const mountRef = useRef<HTMLDivElement>(null);
   const [isClient, setIsClient] = useState(false);
+  const armGroupRef = useRef<THREE.Group | null>(null);
+  const jointGroupsRef = useRef<{
+    j0: THREE.Group | null;
+    j1: THREE.Group | null;
+    j2: THREE.Group | null;
+    j3: THREE.Group | null;
+    j4: THREE.Group | null;
+  }>({
+    j0: null,
+    j1: null,
+    j2: null,
+    j3: null,
+    j4: null
+  });
 
   useEffect(() => {
     setIsClient(true);
   }, []);
+
+  // Update joint angles when jointAngles prop changes
+  useEffect(() => {
+    if (!jointAngles || !isClient) return;
+
+    const { j0, j1, j2, j3, j4 } = jointAngles;
+    const degToRad = (degrees: number) => degrees * Math.PI / 180;
+
+    if (jointGroupsRef.current.j0) {
+      jointGroupsRef.current.j0.rotation.y = degToRad(j0);
+    }
+    if (jointGroupsRef.current.j1) {
+      jointGroupsRef.current.j1.rotation.x = degToRad(j1);
+    }
+    if (jointGroupsRef.current.j2) {
+      jointGroupsRef.current.j2.rotation.x = degToRad(j2);
+    }
+    if (jointGroupsRef.current.j3) {
+      jointGroupsRef.current.j3.rotation.x = degToRad(j3);
+    }
+    if (jointGroupsRef.current.j4) {
+      jointGroupsRef.current.j4.rotation.x = degToRad(j4);
+    }
+  }, [jointAngles, isClient]);
 
   useEffect(() => {
     if (!isClient || !mountRef.current) return;
@@ -89,12 +136,12 @@ export default function ThreeScene({ className = '' }: ThreeSceneProps) {
       const armGroup = new THREE.Group();
       
       // Materials
-      const baseMaterial = new THREE.MeshStandardMaterial({ color: 0x808080 }); // Gray
-      const segment1Material = new THREE.MeshStandardMaterial({ color: 0x909090 }); // Light gray
-      const segment2Material = new THREE.MeshStandardMaterial({ color: 0x707070 }); // Medium gray
-      const segment3Material = new THREE.MeshStandardMaterial({ color: 0x606060 }); // Dark gray
-      const pipetteMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff }); // White
-      const jointMaterial = new THREE.MeshStandardMaterial({ color: 0x404040 }); // Dark gray
+            const baseMaterial = new THREE.MeshStandardMaterial({ color: 0x808080 }); // Gray
+            const segment1Material = new THREE.MeshStandardMaterial({ color: 0x909090 }); // Light gray
+            const segment2Material = new THREE.MeshStandardMaterial({ color: 0x707070 }); // Medium gray
+            const segment3Material = new THREE.MeshStandardMaterial({ color: 0x606060 }); // Dark gray
+            const pipetteMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff }); // White
+            const jointMaterial = new THREE.MeshStandardMaterial({ color: 0x404040 }); // Dark gray
       
       // Base (cylinder) - bottom rests on ground
       const baseGeometry = new THREE.CylinderGeometry(
@@ -114,6 +161,7 @@ export default function ThreeScene({ className = '' }: ThreeSceneProps) {
       j0Group.position.y = DIMENSIONS.base.height;
       j0Group.rotation.y = degToRad(HOME_POSE.j0);
       base.add(j0Group);
+      jointGroupsRef.current.j0 = j0Group;
       
       // Shoulder joint sphere
       const shoulderJointGeometry = new THREE.SphereGeometry(DIMENSIONS.joints.shoulder, 12, 8);
@@ -125,6 +173,7 @@ export default function ThreeScene({ className = '' }: ThreeSceneProps) {
       const j1Group = new THREE.Group();
       j1Group.rotation.x = degToRad(HOME_POSE.j1);
       shoulderJoint.add(j1Group);
+      jointGroupsRef.current.j1 = j1Group;
       
       // Segment 1 (shoulder link)
       const segment1Geometry = new THREE.BoxGeometry(
@@ -150,6 +199,7 @@ export default function ThreeScene({ className = '' }: ThreeSceneProps) {
       j2Group.position.z = DIMENSIONS.segment1.length;
       j2Group.rotation.x = degToRad(HOME_POSE.j2);
       j1Group.add(j2Group);
+      jointGroupsRef.current.j2 = j2Group;
       
       // Segment 2 (elbow link)
       const segment2Geometry = new THREE.BoxGeometry(
@@ -175,6 +225,7 @@ export default function ThreeScene({ className = '' }: ThreeSceneProps) {
       j3Group.position.z = DIMENSIONS.segment2.length;
       j3Group.rotation.x = degToRad(HOME_POSE.j3);
       j2Group.add(j3Group);
+      jointGroupsRef.current.j3 = j3Group;
       
       // Segment 3 (wrist link)
       const segment3Geometry = new THREE.BoxGeometry(
@@ -200,6 +251,7 @@ export default function ThreeScene({ className = '' }: ThreeSceneProps) {
       j4Group.position.z = DIMENSIONS.segment3.length;
       j4Group.rotation.x = degToRad(HOME_POSE.j4);
       j3Group.add(j4Group);
+      jointGroupsRef.current.j4 = j4Group;
       
       // Segment 4 (pipette)
       const segment4Geometry = new THREE.CylinderGeometry(
@@ -216,6 +268,7 @@ export default function ThreeScene({ className = '' }: ThreeSceneProps) {
       j4Group.add(segment4);
       
       scene.add(armGroup);
+      armGroupRef.current = armGroup;
       return armGroup;
     };
 
