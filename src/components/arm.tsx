@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { calculateVerticalPipetteTilt } from '@/lib/pipette-vertical';
+import { useTheme } from '@/contexts/theme-context';
 
 type JointAngles = {
   j0: number;  // yaw
@@ -43,6 +44,7 @@ const HOME_POSE = {
 };
 
 export default function ThreeScene({ className = '', jointAngles }: ThreeSceneProps) {
+  const { theme } = useTheme();
   const mountRef = useRef<HTMLDivElement>(null);
   const [isClient, setIsClient] = useState(false);
   const armGroupRef = useRef<THREE.Group | null>(null);
@@ -103,7 +105,8 @@ export default function ThreeScene({ className = '', jointAngles }: ThreeScenePr
 
     // Scene setup
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xf0f0f0);
+    const backgroundColor = theme === 'dark' ? 0x2a2a2a : 0xf0f0f0;
+    scene.background = new THREE.Color(backgroundColor);
 
     // Camera setup
     const camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 100);
@@ -331,7 +334,7 @@ export default function ThreeScene({ className = '', jointAngles }: ThreeScenePr
       controls.dispose();
       renderer.dispose();
     };
-  }, [isClient]);
+  }, [isClient, theme]);
 
   if (!isClient) {
     return (

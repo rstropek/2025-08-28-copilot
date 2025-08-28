@@ -1,3 +1,41 @@
+/* CSS Custom Properties for Theme */
+:root {
+  /* Light theme colors */
+  --bg-color: #ffffff;
+  --text-color: #333333;
+  --scene-bg: #f0f0f0;
+  
+  /* Theme switcher colors */
+  --theme-switcher-bg: #ffffff;
+  --theme-switcher-color: #333333;
+  --theme-switcher-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  --theme-switcher-hover-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  --theme-switcher-focus: #007acc;
+}
+
+/* Dark theme colors */
+[data-theme="dark"] {
+  --bg-color: #1a1a1a;
+  --text-color: #e0e0e0;
+  --scene-bg: #2a2a2a;
+  
+  /* Theme switcher colors for dark mode */
+  --theme-switcher-bg: #333333;
+  --theme-switcher-color: #e0e0e0;
+  --theme-switcher-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --theme-switcher-hover-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --theme-switcher-focus: #4fc3f7;
+}
+
+/* Apply theme to body */
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+  margin: 0;
+  padding: 0;
+}
+
 .scene {
     width: 100%;
     height: 500px;
